@@ -152,6 +152,12 @@
   </script>
 
   <style>
+    :root {
+      --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+      --gold-rgb: 198, 161, 91;
+    }
+
     html {
       scroll-behavior: smooth;
     }
@@ -213,6 +219,10 @@
 
     .contact-glow {
       background: radial-gradient(50% 60% at 80% 10%, rgba(198, 161, 91, 0.18) 0%, rgba(198, 161, 91, 0.04) 42%, rgba(198, 161, 91, 0) 72%);
+    }
+
+    .contact-spotlight {
+      background: radial-gradient(460px circle at var(--contact-x, 50%) var(--contact-y, 38%), rgba(198, 161, 91, 0.16), transparent 70%);
     }
 
     .profile-orb,
@@ -293,6 +303,16 @@
       opacity: 0.35;
       -webkit-mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
       mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+      animation: grid-drift 40s linear infinite alternate;
+    }
+
+    @keyframes grid-drift {
+      from {
+        background-position: 0 0;
+      }
+      to {
+        background-position: 26px 26px;
+      }
     }
 
     .profile-monogram,
@@ -321,36 +341,802 @@
       background-position: 0 88%;
     }
 
+    /* ============================================================
+       ENTRADA DEL HERO
+       ============================================================ */
     @keyframes hero-in {
       from {
         opacity: 0;
-        transform: translateY(18px);
+        transform: translate3d(0, 24px, 0);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
       }
     }
 
-    .hero-enter {
-      animation: hero-in 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    .hero-item {
+      animation: hero-in 900ms var(--ease-out-expo) both;
+      animation-delay: var(--d, 0ms);
     }
 
-    .hero-enter-delay {
-      animation-delay: 120ms;
+    @keyframes word-in {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 0.5em, 0);
+        filter: blur(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        filter: blur(0);
+      }
     }
 
+    .hero-word {
+      display: inline-block;
+      animation: word-in 900ms var(--ease-out-expo) both;
+    }
+
+    .hero-word:nth-child(1) {
+      animation-delay: 260ms;
+    }
+
+    .hero-word:nth-child(2) {
+      animation-delay: 330ms;
+    }
+
+    .hero-word:nth-child(3) {
+      animation-delay: 400ms;
+    }
+
+    .hero-word:nth-child(4) {
+      animation-delay: 470ms;
+    }
+
+    .hero-word:nth-child(5) {
+      animation-delay: 540ms;
+    }
+
+    /* ============================================================
+       REVEAL AL HACER SCROLL
+       ============================================================ */
     .js [data-reveal] {
       opacity: 0;
-      transform: translateY(22px);
+      transform: translate3d(0, 30px, 0);
       transition:
-        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-        transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+        opacity 850ms var(--ease-out-expo),
+        transform 850ms var(--ease-out-expo);
+      transition-delay: var(--reveal-delay, 0ms);
+      will-change: opacity, transform;
+    }
+
+    .js [data-reveal="left"] {
+      transform: translate3d(-36px, 0, 0);
+    }
+
+    .js [data-reveal="right"] {
+      transform: translate3d(36px, 0, 0);
+    }
+
+    .js [data-reveal="scale"] {
+      transform: translate3d(0, 26px, 0) scale(0.96);
+    }
+
+    .js [data-reveal="pop"] {
+      transform: translate3d(0, 14px, 0) scale(0.9);
+    }
+
+    .js [data-reveal="panel"] {
+      transform: translate3d(0, 42px, 0) scale(0.985);
+    }
+
+    .js [data-reveal="mask"] {
+      opacity: 1;
+      transform: none;
+    }
+
+    .js [data-reveal="mask"] .mask-inner {
+      display: block;
+      clip-path: inset(0 0 105% 0);
+      transform: translate3d(0, 0.18em, 0);
+      transition:
+        clip-path 1000ms var(--ease-out-expo),
+        transform 1000ms var(--ease-out-expo);
+      transition-delay: var(--reveal-delay, 0ms);
+    }
+
+    .js [data-reveal="mask"].is-visible .mask-inner {
+      clip-path: inset(0 0 -10% 0);
+      transform: translate3d(0, 0, 0);
     }
 
     .js [data-reveal].is-visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: translate3d(0, 0, 0);
+      will-change: auto;
+    }
+
+    /* Subrayado dorado que se dibuja al entrar en pantalla. */
+    .js [data-reveal] .profile-highlight {
+      background-size: 0% 0.34em;
+      transition: background-size 900ms var(--ease-out-expo) 420ms;
+    }
+
+    .js [data-reveal].is-visible .profile-highlight {
+      background-size: 100% 0.34em;
+    }
+
+    /* ============================================================
+       HEADER, LÍNEAS Y MOVIMIENTO CONTINUO
+       ============================================================ */
+    [data-header] {
+      transition:
+        background-color 350ms var(--ease-soft),
+        box-shadow 350ms var(--ease-soft);
+    }
+
+    [data-header].is-scrolled {
+      background-color: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 18px 45px -38px rgba(15, 23, 42, 0.5);
+    }
+
+    [data-header] > div {
+      transition: padding 350ms var(--ease-soft);
+    }
+
+    [data-header].is-scrolled > div {
+      padding-top: 0.55rem;
+      padding-bottom: 0.55rem;
+    }
+
+    .logo-link {
+      position: relative;
+    }
+
+    .logo-link::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: #C6A15B;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 420ms var(--ease-out-expo);
+    }
+
+    .logo-link:hover::after,
+    .logo-link:focus-visible::after {
+      transform: scaleX(1);
+    }
+
+    [data-scroll-progress] {
+      box-shadow: 0 0 12px rgba(var(--gold-rgb), 0.65);
+    }
+
+    .line-in {
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: line-in 900ms var(--ease-out-expo) 380ms forwards;
+    }
+
+    @keyframes line-in {
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    .js .rule-line {
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 900ms var(--ease-out-expo) 200ms;
+    }
+
+    .js .is-visible .rule-line {
+      transform: scaleX(1);
+    }
+
+    .flow-line {
+      background-size: 200% 100% !important;
+      animation: line-flow 8s linear infinite;
+    }
+
+    @keyframes line-flow {
+      from {
+        background-position: 0% 50%;
+      }
+      to {
+        background-position: 200% 50%;
+      }
+    }
+
+    .profile-monogram,
+    .hero-monogram {
+      animation: monogram-breathe 14s var(--ease-soft) infinite;
+    }
+
+    @keyframes monogram-breathe {
+      0%,
+      100% {
+        opacity: 0.82;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .hero-speck {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 9999px;
+      background: rgba(var(--gold-rgb), 0.7);
+      box-shadow: 0 0 12px rgba(var(--gold-rgb), 0.5);
+      animation: speck-float 11s var(--ease-soft) infinite alternate;
+    }
+
+    .hero-speck-1 {
+      top: 16%;
+      left: 9%;
+      animation-delay: -2s;
+    }
+
+    .hero-speck-2 {
+      top: 34%;
+      right: 12%;
+      width: 5px;
+      height: 5px;
+      animation-delay: -5s;
+    }
+
+    .hero-speck-3 {
+      bottom: 18%;
+      left: 20%;
+      width: 3px;
+      height: 3px;
+      animation-delay: -8s;
+    }
+
+    .hero-speck-4 {
+      top: 72%;
+      right: 30%;
+      animation-delay: -3s;
+    }
+
+    @keyframes speck-float {
+      from {
+        transform: translate3d(0, 0, 0) scale(0.85);
+        opacity: 0.35;
+      }
+      to {
+        transform: translate3d(10px, -24px, 0) scale(1.15);
+        opacity: 0.95;
+      }
+    }
+
+    .pulse-dot {
+      position: relative;
+    }
+
+    .pulse-dot::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      background: rgba(var(--gold-rgb), 0.55);
+      animation: dot-pulse 2.6s var(--ease-soft) infinite;
+      pointer-events: none;
+    }
+
+    @keyframes dot-pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.55;
+      }
+      75%,
+      100% {
+        transform: scale(2.8);
+        opacity: 0;
+      }
+    }
+
+    /* ============================================================
+       RETRATO DEL HERO
+       ============================================================ */
+    .portrait-frame {
+      position: relative;
+    }
+
+    .portrait-frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border: 1px solid rgba(var(--gold-rgb), 0.45);
+      border-radius: 1rem;
+      transform: translate(14px, 14px);
+      pointer-events: none;
+      animation: frame-fade 900ms var(--ease-out-expo) 700ms both;
+      transition: transform 450ms var(--ease-out-expo);
+    }
+
+    .portrait-frame:hover::after {
+      transform: translate(20px, 20px);
+    }
+
+    @keyframes frame-fade {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .portrait-media {
+      position: relative;
+      z-index: 1;
+      animation: portrait-reveal 1100ms var(--ease-out-expo) 180ms both;
+    }
+
+    .portrait-img {
+      animation: portrait-zoom 1600ms var(--ease-out-expo) 180ms both;
+    }
+
+    .portrait-sheen {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.3) 48%, transparent 62%);
+      transform: translateX(-140%);
+      animation: portrait-sheen 1800ms var(--ease-soft) 950ms both;
+    }
+
+    @keyframes portrait-reveal {
+      from {
+        clip-path: inset(0 0 100% 0 round 1rem);
+      }
+      to {
+        clip-path: inset(0 0 0 0 round 1rem);
+      }
+    }
+
+    @keyframes portrait-zoom {
+      from {
+        transform: scale(1.08);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes portrait-sheen {
+      to {
+        transform: translateX(140%);
+      }
+    }
+
+    /* El retrato ocupa todo el alto del hero y se funde con el fondo
+       blanco por el lado derecho. */
+    @media (min-width: 1024px) {
+      #inicio .hero-figure {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        transform: none;
+      }
+
+      #inicio .hero-figure::after {
+        display: none;
+      }
+
+      #inicio .hero-figure .portrait-media {
+        height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        animation: hero-image-in 1300ms var(--ease-out-expo) 120ms both;
+      }
+
+      #inicio .hero-figure .portrait-img {
+        height: 100%;
+        width: auto;
+        max-width: none;
+        object-fit: contain;
+        object-position: left center;
+        animation: none;
+        -webkit-mask-image: linear-gradient(90deg, #000000 0%, #000000 84%, transparent 100%);
+        mask-image: linear-gradient(90deg, #000000 0%, #000000 84%, transparent 100%);
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-size: 100% 100%;
+        mask-size: 100% 100%;
+      }
+    }
+
+    @keyframes hero-image-in {
+      from {
+        clip-path: inset(0 100% 0 0);
+      }
+      to {
+        clip-path: inset(0 0 0 0);
+      }
+    }
+
+    /* ============================================================
+       TILT 3D Y BRILLO EN TARJETAS
+       ============================================================ */
+    [data-tilt] {
+      transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(0, var(--lift, 0px), 0);
+      transition:
+        transform 280ms var(--ease-out-expo),
+        box-shadow 300ms var(--ease-soft),
+        border-color 300ms var(--ease-soft);
+    }
+
+    .card-tilt {
+      position: relative;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .card-tilt:hover {
+        --lift: -6px;
+      }
+    }
+
+    .card-tilt::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(var(--gold-rgb), 0.85), transparent);
+      transform: translateX(-101%);
+      transition: transform 700ms var(--ease-out-expo);
+      pointer-events: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .card-tilt:hover::after {
+        transform: translateX(101%);
+      }
+    }
+
+    .card-glare {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      background: radial-gradient(220px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.22), transparent 68%);
+      opacity: 0;
+      transition: opacity 300ms var(--ease-soft);
+      pointer-events: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .card-tilt:hover .card-glare {
+        opacity: 1;
+      }
+    }
+
+    .card-media {
+      position: relative;
+    }
+
+    .card-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.18) 50%, transparent 62%);
+      transform: translateX(-130%);
+      transition: transform 900ms var(--ease-out-expo);
+      pointer-events: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .card-tilt:hover .card-media::after {
+        transform: translateX(130%);
+      }
+    }
+
+    .icon-badge {
+      transition:
+        transform 350ms var(--ease-out-expo),
+        background-color 300ms var(--ease-soft),
+        border-color 300ms var(--ease-soft),
+        box-shadow 350ms var(--ease-soft);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .card-tilt:hover .icon-badge {
+        transform: translateY(-3px) rotate(-3deg);
+        border-color: rgba(var(--gold-rgb), 0.5);
+        background-color: rgba(var(--gold-rgb), 0.1);
+        box-shadow: 0 14px 26px -20px rgba(15, 23, 42, 0.45);
+      }
+    }
+
+    .js [data-reveal] .icon-badge :is(path, circle) {
+      stroke-dasharray: 160;
+      stroke-dashoffset: 160;
+    }
+
+    .js [data-reveal].is-visible .icon-badge :is(path, circle) {
+      animation: icon-draw 1200ms var(--ease-out-expo) 420ms forwards;
+    }
+
+    @keyframes icon-draw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .index-badge {
+      transition:
+        transform 350ms var(--ease-out-expo),
+        background-color 300ms var(--ease-soft);
+    }
+
+    .index-badge::after {
+      content: "";
+      position: absolute;
+      inset: -5px;
+      border: 1px dashed rgba(var(--gold-rgb), 0.55);
+      border-radius: 9999px;
+      opacity: 0;
+      transform: scale(0.7);
+      transition:
+        opacity 300ms var(--ease-soft),
+        transform 400ms var(--ease-out-expo);
+      pointer-events: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .card-tilt:hover .index-badge {
+        transform: scale(1.06);
+        background-color: rgba(15, 23, 42, 0.6);
+      }
+
+      .card-tilt:hover .index-badge::after {
+        opacity: 1;
+        transform: scale(1);
+        animation: badge-spin 18s linear infinite;
+      }
+    }
+
+    @keyframes badge-spin {
+      from {
+        transform: rotate(0deg) scale(1);
+      }
+      to {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    /* ============================================================
+       PERFIL: CHIPS, CITA E IMAGEN
+       ============================================================ */
+    .profile-chip {
+      transition:
+        transform 250ms var(--ease-out-expo),
+        border-color 250ms var(--ease-soft),
+        background-color 250ms var(--ease-soft),
+        color 250ms var(--ease-soft),
+        box-shadow 250ms var(--ease-soft);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .profile-chip:hover {
+        transform: translateY(-2px);
+        border-color: rgba(var(--gold-rgb), 0.5);
+        background-color: #FFFFFF;
+        color: #1E3A8A;
+        box-shadow: 0 12px 22px -20px rgba(15, 23, 42, 0.45);
+      }
+    }
+
+    .quote-block {
+      transition:
+        transform 300ms var(--ease-out-expo),
+        border-color 300ms var(--ease-soft),
+        background-color 300ms var(--ease-soft);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .quote-block:hover {
+        transform: translateX(3px);
+        border-color: rgba(var(--gold-rgb), 0.9);
+        background-color: #FFFFFF;
+      }
+    }
+
+    .profile-img {
+      transition: transform 900ms var(--ease-out-expo);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .profile-figure:hover .profile-img {
+        transform: scale(1.045);
+      }
+    }
+
+    /* ============================================================
+       CONTACTO: FILAS, CAMPOS Y BOTONES
+       ============================================================ */
+    #contacto .contact-link {
+      transition:
+        transform 320ms var(--ease-out-expo),
+        border-color 300ms var(--ease-soft),
+        background-color 300ms var(--ease-soft),
+        color 300ms var(--ease-soft);
+    }
+
+    #contacto .contact-icon {
+      transition:
+        transform 350ms var(--ease-out-expo),
+        background-color 300ms var(--ease-soft),
+        border-color 300ms var(--ease-soft);
+    }
+
+    #contacto .contact-arrow {
+      transition:
+        transform 350ms var(--ease-out-expo),
+        color 300ms var(--ease-soft);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      #contacto .contact-link:hover {
+        transform: translateX(5px);
+      }
+
+      #contacto .contact-link:hover .contact-icon {
+        transform: rotate(-5deg) scale(1.06);
+        background-color: rgba(var(--gold-rgb), 0.16);
+      }
+
+      #contacto .contact-link:hover .contact-arrow {
+        transform: translate(2px, -2px);
+      }
+    }
+
+    [data-contact-form] .field-group label {
+      transition: color 250ms var(--ease-soft);
+    }
+
+    [data-contact-form] .field-group:focus-within label {
+      color: #8A6A2F;
+    }
+
+    [data-contact-form] .field-control {
+      transition:
+        border-color 250ms var(--ease-soft),
+        box-shadow 250ms var(--ease-soft),
+        transform 250ms var(--ease-out-expo);
+    }
+
+    [data-contact-form] .field-control:focus {
+      transform: translateY(-1px);
+      box-shadow:
+        0 16px 30px -26px rgba(15, 23, 42, 0.4),
+        0 0 0 4px rgba(var(--gold-rgb), 0.08);
+    }
+
+    .field-shake {
+      animation: field-shake 450ms var(--ease-soft);
+    }
+
+    @keyframes field-shake {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      20% {
+        transform: translateX(-5px);
+      }
+      40% {
+        transform: translateX(4px);
+      }
+      60% {
+        transform: translateX(-3px);
+      }
+      80% {
+        transform: translateX(2px);
+      }
+    }
+
+    .form-status:not(.hidden) {
+      animation: status-in 500ms var(--ease-out-expo) both;
+    }
+
+    @keyframes status-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+    }
+
+    .btn-lift {
+      transition:
+        transform 300ms var(--ease-out-expo),
+        translate 300ms var(--ease-out-expo),
+        box-shadow 300ms var(--ease-soft),
+        background-color 250ms var(--ease-soft),
+        border-color 250ms var(--ease-soft),
+        color 250ms var(--ease-soft);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-lift:hover {
+        transform: translateY(-2px);
+      }
+    }
+
+    .btn-lift:active {
+      transform: translateY(0) scale(0.985);
+    }
+
+    .btn-sheen {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-sheen::before {
+      content: "";
+      position: absolute;
+      top: -20%;
+      bottom: -20%;
+      left: 0;
+      width: 55%;
+      background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.28) 50%, transparent 80%);
+      transform: translateX(-160%) skewX(-16deg);
+      transition: transform 800ms var(--ease-out-expo);
+      pointer-events: none;
+    }
+
+    .btn-sheen:hover::before {
+      transform: translateX(260%) skewX(-16deg);
+    }
+
+    .btn-sheen-gold::before {
+      background: linear-gradient(100deg, transparent 20%, rgba(var(--gold-rgb), 0.3) 50%, transparent 80%);
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer {
+      position: relative;
+      overflow: hidden;
+    }
+
+    footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(var(--gold-rgb), 0.55), transparent);
+      background-size: 200% 100%;
+      animation: line-flow 7s linear infinite;
+      pointer-events: none;
+    }
+
+    .back-top svg {
+      transition: transform 300ms var(--ease-out-expo);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .back-top:hover svg {
+        transform: translateY(-3px);
+      }
     }
 
     [data-contact-form] [aria-invalid="true"] {
@@ -384,19 +1170,83 @@
         scroll-behavior: auto !important;
       }
 
-      .hero-enter {
+      .hero-item,
+      .hero-word {
         animation: none;
+        opacity: 1;
+        transform: none;
+        filter: none;
       }
 
       .profile-orb,
-      .hero-orb {
+      .hero-orb,
+      .hero-speck,
+      .profile-monogram,
+      .hero-monogram,
+      .profile-grid,
+      .hero-grid,
+      .flow-line,
+      .line-in,
+      .portrait-sheen,
+      .portrait-frame::after,
+      .portrait-media,
+      .portrait-img {
         animation: none;
+      }
+
+      .hero-speck {
+        display: none;
+      }
+
+      .pulse-dot::after {
+        animation: none;
+        opacity: 0;
+      }
+
+      .portrait-frame::after {
+        opacity: 1;
+      }
+
+      .line-in,
+      .js .rule-line {
+        transform: none;
+        transition: none;
       }
 
       .js [data-reveal] {
         opacity: 1;
         transform: none;
+        clip-path: none;
         transition: none;
+      }
+
+      .js [data-reveal="mask"] .mask-inner {
+        clip-path: none;
+        transform: none;
+        transition: none;
+      }
+
+      .js [data-reveal] .profile-highlight {
+        background-size: 100% 0.34em;
+        transition: none;
+      }
+
+      .js [data-reveal] .icon-badge :is(path, circle) {
+        stroke-dashoffset: 0;
+        animation: none;
+      }
+
+      .btn-sheen::before {
+        display: none;
+      }
+
+      [data-tilt] {
+        transform: none !important;
+        transition: none;
+      }
+
+      .form-status:not(.hidden) {
+        animation: none;
       }
     }
   </style>
@@ -405,17 +1255,17 @@
 <body class="bg-mist font-sans text-ink antialiased">
   <a href="#contenido" class="skip-link">Saltar al contenido</a>
 
-  <header class="sticky top-0 z-50 border-b border-line/80 bg-white/90 backdrop-blur-md">
+  <header data-header class="sticky top-0 z-50 border-b border-line/80 bg-white/90 backdrop-blur-md">
     <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-3 sm:py-4 lg:px-8">
-      <a href="#inicio" class="group flex min-h-11 min-w-0 flex-col justify-center sm:flex-row sm:items-baseline sm:gap-2.5">
+      <a href="#inicio" class="logo-link group flex min-h-11 min-w-0 flex-col justify-center sm:flex-row sm:items-baseline sm:gap-2.5">
         <span class="font-serif text-[20px] font-semibold leading-none tracking-[-0.02em] text-ink transition-colors duration-200 group-hover:text-navy sm:text-2xl">Lic. Arturo Said</span>
         <span class="mt-1 text-[9px] font-medium uppercase leading-none tracking-[0.18em] text-slate-500 sm:mt-0 sm:border-l sm:border-line sm:pl-2.5 sm:text-[10px] sm:tracking-[0.2em]">Abogado Penalista</span>
       </a>
 
       <nav aria-label="Navegación principal" class="shrink-0">
-        <a href="#contacto" class="group inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-line px-3.5 text-sm font-medium text-ink transition-colors duration-200 hover:border-gold hover:text-navy sm:gap-2 sm:px-5">
+        <a href="#contacto" class="btn-lift btn-sheen btn-sheen-gold group inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-line px-3.5 text-sm font-medium text-ink hover:border-gold hover:text-navy sm:gap-2 sm:px-5">
           <span>Contacto</span>
-          <svg class="h-3.5 w-3.5 text-slate-500 transition-colors duration-200 group-hover:text-navy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <svg class="h-3.5 w-3.5 text-slate-500 transition duration-300 group-hover:translate-y-0.5 group-hover:text-navy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <path d="m6 9 6 6 6-6"/>
           </svg>
         </a>
@@ -436,45 +1286,49 @@
     <section id="inicio" data-hero aria-labelledby="inicio-title" class="relative scroll-mt-24 overflow-hidden border-b border-line bg-white">
       <div class="hero-glow pointer-events-none absolute inset-0" aria-hidden="true"></div>
       <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-        <span class="hero-orb hero-orb-gold"></span>
-        <span class="hero-orb hero-orb-blue"></span>
-        <span class="hero-orb hero-orb-cream"></span>
+        <span class="hero-orb hero-orb-gold" data-parallax="-0.04"></span>
+        <span class="hero-orb hero-orb-blue" data-parallax="0.03"></span>
+        <span class="hero-orb hero-orb-cream" data-parallax="-0.05"></span>
         <span class="hero-grid absolute inset-0"></span>
-        <span class="hero-monogram absolute right-[-2rem] top-1/2 hidden -translate-y-1/2 lg:block">JSB</span>
+        <span class="hero-monogram absolute right-[-2rem] top-1/2 hidden -translate-y-1/2 lg:block" data-parallax="0.06">JSB</span>
+        <span class="hero-speck hero-speck-1"></span>
+        <span class="hero-speck hero-speck-2"></span>
+        <span class="hero-speck hero-speck-3"></span>
+        <span class="hero-speck hero-speck-4"></span>
         <span class="hero-spotlight absolute inset-0" data-hero-spotlight></span>
       </div>
 
-      <div class="relative mx-auto w-full max-w-7xl px-6 pt-10 pb-16 sm:pt-14 sm:pb-20 lg:px-8 lg:pt-16 lg:pb-20">
+      <div class="relative z-10 mx-auto w-full max-w-7xl px-6 pt-10 pb-10 sm:pt-14 sm:pb-12 lg:px-8 lg:py-20">
         <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
-          <div class="hero-enter min-w-0 text-center lg:col-span-7 lg:text-left">
+          <div class="hero-item min-w-0 text-center lg:col-span-7 lg:col-start-6 lg:text-left" style="--d: 80ms">
             <div class="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/65 p-6 shadow-lift backdrop-blur-xl sm:p-8 lg:p-10">
-              <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" aria-hidden="true"></div>
+              <div class="flow-line absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" aria-hidden="true"></div>
 
-              <div class="flex items-start justify-center gap-3 lg:justify-start">
-                <span class="mt-2.5 h-px w-8 shrink-0 bg-gold" aria-hidden="true"></span>
+              <div class="hero-item flex items-start justify-center gap-3 lg:justify-start" style="--d: 200ms">
+                <span class="line-in mt-2.5 h-px w-8 shrink-0 bg-gold" aria-hidden="true"></span>
                 <p class="text-[11px] font-semibold uppercase leading-5 tracking-[0.22em] text-gold-dark">Derecho Penal · Criminalística · Derechos Humanos</p>
               </div>
 
-              <h1 id="inicio-title" class="mt-5 text-balance break-words font-serif text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-ink sm:text-5xl lg:text-6xl">Lic. Jorge Arturo Said Bernal</h1>
+              <h1 id="inicio-title" class="mt-5 text-balance break-words font-serif text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-ink sm:text-5xl lg:text-6xl"><span class="hero-word">Lic.</span> <span class="hero-word">Jorge</span> <span class="hero-word">Arturo</span> <span class="hero-word">Said</span> <span class="hero-word">Bernal</span></h1>
 
-              <p class="mx-auto mt-6 max-w-xl text-pretty text-base leading-7 text-slate-600 lg:mx-0 lg:text-lg lg:leading-8">Especialista en Derecho Penal, Perito en Criminalística y Asesor en Derechos Humanos.</p>
+              <p class="hero-item mx-auto mt-6 max-w-xl text-pretty text-base leading-7 text-slate-600 lg:mx-0 lg:text-lg lg:leading-8" style="--d: 520ms">Especialista en Derecho Penal, Perito en Criminalística y Asesor en Derechos Humanos.</p>
 
-              <p class="mt-6 inline-flex max-w-full items-center gap-2.5 rounded-full border border-gold/30 bg-[#FBF8F1] px-3.5 py-2 text-[11px] font-medium leading-5 text-gold-dark">
-                <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-gold" aria-hidden="true"></span>
+              <p class="hero-item mt-6 inline-flex max-w-full items-center gap-2.5 rounded-full border border-gold/30 bg-[#FBF8F1] px-3.5 py-2 text-[11px] font-medium leading-5 text-gold-dark" style="--d: 620ms">
+                <span class="pulse-dot h-1.5 w-1.5 shrink-0 rounded-full bg-gold" aria-hidden="true"></span>
                 <span class="min-w-0">Abogado litigante en Baptista Abogados Penalistas</span>
               </p>
 
-              <div class="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:justify-center lg:items-start lg:justify-start">
-                <a href="#contacto" class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-white shadow-soft transition-colors duration-200 hover:bg-navy sm:w-auto sm:px-6">
+              <div class="hero-item mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:justify-center lg:items-start lg:justify-start" style="--d: 720ms">
+                <a href="#contacto" data-magnetic class="btn-lift btn-sheen group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-white shadow-soft hover:bg-navy sm:w-auto sm:px-6">
                   <span>Agendar consulta</span>
                   <svg class="h-4 w-4 text-gold-light transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d="M5 12h14"/>
                     <path d="m13 6 6 6-6 6"/>
                   </svg>
                 </a>
-                <a href="#trayectoria" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-5 text-sm font-semibold text-ink transition-colors duration-200 hover:border-gold hover:text-navy sm:w-auto sm:px-6">
+                <a href="#trayectoria" class="btn-lift btn-sheen btn-sheen-gold group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-5 text-sm font-semibold text-ink hover:border-gold hover:text-navy sm:w-auto sm:px-6">
                   <span>Ver trayectoria</span>
-                  <svg class="h-4 w-4 text-gold-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <svg class="h-4 w-4 text-gold-dark transition-transform duration-300 group-hover:translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d="M12 5v14"/>
                     <path d="m6 13 6 6 6-6"/>
                   </svg>
@@ -482,22 +1336,26 @@
               </div>
             </div>
           </div>
-
-          <!-- Fotografía oficial con su fondo original. -->
-          <figure class="mx-auto w-full min-w-0 max-w-[320px] sm:max-w-[380px] lg:order-first lg:col-span-5 lg:mx-0 lg:max-w-[400px] lg:self-end lg:-translate-x-7">
-            <img
-              src="assets/lic-arturo-said.jpeg"
-              alt="Retrato del Lic. Jorge Arturo Said Bernal en su despacho."
-              width="1083"
-              height="1452"
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-              class="hero-enter hero-enter-delay block h-auto w-full rounded-2xl shadow-soft"
-            >
-          </figure>
         </div>
       </div>
+
+      <!-- Fotografía oficial: en desktop ocupa todo el alto del hero, pegada
+           al borde izquierdo y fundida hacia la derecha. -->
+      <figure class="hero-figure portrait-frame relative mx-auto mb-10 w-full max-w-[320px] min-w-0 sm:mb-14 sm:max-w-[380px] lg:absolute lg:inset-y-0 lg:left-0 lg:z-0 lg:m-0 lg:mb-0 lg:w-[45%] lg:max-w-none">
+        <div class="portrait-media relative overflow-hidden rounded-2xl shadow-soft">
+          <img
+            src="assets/lic-arturo-said.jpeg"
+            alt="Retrato del Lic. Jorge Arturo Said Bernal en su despacho."
+            width="1083"
+            height="1452"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="portrait-img block h-auto w-full"
+          >
+          <span class="portrait-sheen" aria-hidden="true"></span>
+        </div>
+      </figure>
     </section>
 
     <!-- ============================================================
@@ -505,47 +1363,47 @@
          ============================================================ -->
     <section id="perfil" data-profile aria-labelledby="perfil-title" class="relative scroll-mt-24 overflow-hidden bg-paper py-16 sm:py-20 lg:py-24">
       <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-        <span class="profile-orb profile-orb-gold"></span>
-        <span class="profile-orb profile-orb-blue"></span>
-        <span class="profile-orb profile-orb-cream"></span>
+        <span class="profile-orb profile-orb-gold" data-parallax="-0.04"></span>
+        <span class="profile-orb profile-orb-blue" data-parallax="0.03"></span>
+        <span class="profile-orb profile-orb-cream" data-parallax="-0.05"></span>
         <span class="profile-grid absolute inset-0"></span>
-        <span class="profile-monogram absolute right-[-2rem] top-1/2 hidden -translate-y-1/2 md:block">AS</span>
+        <span class="profile-monogram absolute right-[-2rem] top-1/2 hidden -translate-y-1/2 md:block" data-parallax="0.06">AS</span>
         <span class="profile-spotlight absolute inset-0" data-profile-spotlight></span>
       </div>
 
       <div class="relative mx-auto w-full max-w-7xl px-6 lg:px-8">
-        <div class="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-lift backdrop-blur-xl sm:p-10 lg:p-12" data-reveal>
-          <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" aria-hidden="true"></div>
+        <div class="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-lift backdrop-blur-xl sm:p-10 lg:p-12" data-reveal="panel">
+          <div class="flow-line absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" aria-hidden="true"></div>
 
           <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
             <div class="min-w-0 lg:col-span-7">
               <div class="flex items-center gap-3">
-                <span class="h-px w-8 bg-gold" aria-hidden="true"></span>
+                <span class="rule-line h-px w-8 bg-gold" aria-hidden="true"></span>
                 <p class="text-[11px] font-semibold uppercase leading-5 tracking-[0.22em] text-gold-dark">Perfil Profesional</p>
               </div>
 
-              <h2 id="perfil-title" class="mt-6 text-balance font-serif text-3xl font-semibold leading-[1.08] tracking-[-0.02em] text-ink sm:text-4xl lg:text-5xl">Lic. Jorge Arturo Said Bernal es un <span class="profile-highlight">destacado litigante</span> y <span class="profile-highlight">estratega legal</span> especializado en materia penal.</h2>
+              <h2 id="perfil-title" data-reveal="mask" style="--reveal-delay: 160ms" class="mt-6 text-balance font-serif text-3xl font-semibold leading-[1.08] tracking-[-0.02em] text-ink sm:text-4xl lg:text-5xl"><span class="mask-inner">Lic. Jorge Arturo Said Bernal es un <span class="profile-highlight">destacado litigante</span> y <span class="profile-highlight">estratega legal</span> especializado en materia penal.</span></h2>
 
-              <div class="mt-6 h-px w-16 bg-gold/70" aria-hidden="true"></div>
+              <div class="rule-line mt-6 h-px w-16 bg-gold/70" aria-hidden="true"></div>
 
               <p class="mt-6 max-w-2xl text-pretty text-base leading-8 text-slate-600 sm:text-lg">Con una sólida formación científica y jurídica, combina el litigio de alto nivel con el rigor de la investigación criminalística, ofreciendo una defensa y asesoría integral a sus representados.</p>
 
               <p id="areas-practica" class="mt-7 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600">Áreas de práctica</p>
-              <ul class="mt-3 flex flex-wrap gap-2" aria-labelledby="areas-practica">
-                <li class="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600">Derecho Penal</li>
-                <li class="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600">Litigio estratégico</li>
-                <li class="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600">Criminalística</li>
-                <li class="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600">Derechos Humanos</li>
+              <ul class="mt-3 flex flex-wrap gap-2" aria-labelledby="areas-practica" data-stagger>
+                <li data-reveal="pop"><span class="profile-chip inline-flex rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600">Derecho Penal</span></li>
+                <li data-reveal="pop"><span class="profile-chip inline-flex rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600">Litigio estratégico</span></li>
+                <li data-reveal="pop"><span class="profile-chip inline-flex rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600">Criminalística</span></li>
+                <li data-reveal="pop"><span class="profile-chip inline-flex rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600">Derechos Humanos</span></li>
               </ul>
 
-              <div class="mt-8 rounded-r-xl border-l-2 border-gold/60 bg-white/80 px-5 py-4">
+              <div class="quote-block mt-8 rounded-r-xl border-l-2 border-gold/60 bg-white/80 px-5 py-4">
                 <p class="text-pretty text-sm leading-7 text-slate-600 sm:text-base">Actualmente, es abogado litigante de la firma legal Baptista Abogados Penalistas, donde lidera estrategias de defensa con un enfoque centrado en la justicia y el debido proceso.</p>
               </div>
             </div>
 
             <div class="min-w-0 lg:col-span-5">
-              <figure class="flex h-full min-w-0 flex-col">
-                <div class="min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/70 bg-white/50 p-2 shadow-lift">
+              <figure class="profile-figure flex h-full min-w-0 flex-col" data-reveal="scale" style="--reveal-delay: 180ms">
+                <div class="profile-media min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/70 bg-white/50 p-2 shadow-lift" data-tilt="soft">
                   <img
                     src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&amp;fit=crop&amp;w=900&amp;h=1125&amp;q=75"
                     alt="Biblioteca jurídica con libros y bustos"
@@ -553,7 +1411,7 @@
                     height="1125"
                     loading="lazy"
                     decoding="async"
-                    class="aspect-[4/3] h-full w-full rounded-xl object-cover lg:aspect-auto"
+                    class="profile-img aspect-[4/3] h-full w-full rounded-xl object-cover lg:aspect-auto"
                   >
                 </div>
                 <figcaption class="mt-3 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-600">Formación jurídica · Litigio estratégico</figcaption>
@@ -571,14 +1429,14 @@
       <div class="mx-auto w-full max-w-7xl px-6 lg:px-8">
         <header class="max-w-2xl" data-reveal>
           <h2 id="trayectoria-title" class="text-balance font-serif text-3xl font-semibold leading-[1.1] tracking-[-0.02em] text-ink sm:text-4xl">Trayectoria y Credenciales</h2>
-          <span class="mt-6 block h-px w-12 bg-gold" aria-hidden="true"></span>
+          <span class="rule-line mt-6 block h-px w-12 bg-gold" aria-hidden="true"></span>
           <p class="mt-6 max-w-md text-sm leading-6 text-slate-600">Formación jurídica, especialización pericial y compromiso con los derechos humanos.</p>
         </header>
 
-        <ul role="list" class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul role="list" class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
           <li class="min-w-0" data-reveal>
-            <article class="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition duration-200 ease-out hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-lift motion-reduce:transform-none motion-reduce:transition-none">
-              <div class="relative aspect-[4/3] overflow-hidden bg-ink">
+            <article class="card-tilt group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft hover:border-gold/50 hover:shadow-lift" data-tilt>
+              <div class="card-media relative aspect-[4/3] overflow-hidden bg-ink">
                 <img
                   src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=75"
                   alt="Estatua de la justicia con balanza"
@@ -589,11 +1447,12 @@
                   class="absolute inset-0 h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transform-none"
                 >
                 <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" aria-hidden="true"></div>
-                <span class="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-gold/50 bg-ink/40 font-serif text-xs font-medium text-gold-light backdrop-blur-sm" aria-hidden="true">01</span>
+                <span class="card-glare" aria-hidden="true"></span>
+                <span class="index-badge absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-gold/50 bg-ink/40 font-serif text-xs font-medium text-gold-light backdrop-blur-sm" aria-hidden="true">01</span>
                 <span class="absolute bottom-5 left-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-gold-light">Formación</span>
               </div>
               <div class="flex flex-1 flex-col p-6">
-                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/25 bg-gold/5 text-gold-dark">
+                <span class="icon-badge flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/25 bg-gold/5 text-gold-dark">
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d="M12 3v18"/>
                     <path d="M8 21h8"/>
@@ -611,9 +1470,9 @@
             </article>
           </li>
 
-          <li class="min-w-0 delay-100" data-reveal>
-            <article class="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition duration-200 ease-out hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-lift motion-reduce:transform-none motion-reduce:transition-none">
-              <div class="relative aspect-[4/3] overflow-hidden bg-ink">
+          <li class="min-w-0" data-reveal>
+            <article class="card-tilt group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft hover:border-gold/50 hover:shadow-lift" data-tilt>
+              <div class="card-media relative aspect-[4/3] overflow-hidden bg-ink">
                 <img
                   src="https://images.unsplash.com/photo-1518152006812-edab29b069ac?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=75"
                   alt="Microscopios en un laboratorio"
@@ -624,11 +1483,12 @@
                   class="absolute inset-0 h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transform-none"
                 >
                 <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" aria-hidden="true"></div>
-                <span class="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-gold/50 bg-ink/40 font-serif text-xs font-medium text-gold-light backdrop-blur-sm" aria-hidden="true">02</span>
+                <span class="card-glare" aria-hidden="true"></span>
+                <span class="index-badge absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-gold/50 bg-ink/40 font-serif text-xs font-medium text-gold-light backdrop-blur-sm" aria-hidden="true">02</span>
                 <span class="absolute bottom-5 left-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-gold-light">Especialización</span>
               </div>
               <div class="flex flex-1 flex-col p-6">
-                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/25 bg-gold/5 text-gold-dark">
+                <span class="icon-badge flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/25 bg-gold/5 text-gold-dark">
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <circle cx="10.5" cy="10.5" r="6.5"/>
                     <path d="m15.5 15.5 5 5"/>
@@ -644,9 +1504,9 @@
             </article>
           </li>
 
-          <li class="min-w-0 delay-150" data-reveal>
-            <article class="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft transition duration-200 ease-out hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-lift motion-reduce:transform-none motion-reduce:transition-none">
-              <div class="relative aspect-[4/3] overflow-hidden bg-ink">
+          <li class="min-w-0" data-reveal>
+            <article class="card-tilt group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft hover:border-gold/50 hover:shadow-lift" data-tilt>
+              <div class="card-media relative aspect-[4/3] overflow-hidden bg-ink">
                 <img
                   src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=75"
                   alt="Apretón de manos"
@@ -657,11 +1517,12 @@
                   class="absolute inset-0 h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transform-none"
                 >
                 <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" aria-hidden="true"></div>
-                <span class="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-gold/50 bg-ink/40 font-serif text-xs font-medium text-gold-light backdrop-blur-sm" aria-hidden="true">03</span>
+                <span class="card-glare" aria-hidden="true"></span>
+                <span class="index-badge absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-gold/50 bg-ink/40 font-serif text-xs font-medium text-gold-light backdrop-blur-sm" aria-hidden="true">03</span>
                 <span class="absolute bottom-5 left-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-gold-light">Derechos Humanos</span>
               </div>
               <div class="flex flex-1 flex-col p-6">
-                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/25 bg-gold/5 text-gold-dark">
+                <span class="icon-badge flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/25 bg-gold/5 text-gold-dark">
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d="M12 3 5 6v5c0 4.4 2.9 8 7 9 4.1-1 7-4.6 7-9V6l-7-3Z"/>
                     <circle cx="12" cy="10.5" r="3.2"/>
@@ -683,23 +1544,26 @@
     <!-- ============================================================
          CONTACTO
          ============================================================ -->
-    <section id="contacto" aria-labelledby="contacto-title" class="relative scroll-mt-24 overflow-hidden border-t border-gold/30 bg-ink py-16 text-white sm:py-20 lg:py-24">
-      <div class="contact-glow pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <section id="contacto" data-contact aria-labelledby="contacto-title" class="relative scroll-mt-24 overflow-hidden border-t border-gold/30 bg-ink py-16 text-white sm:py-20 lg:py-24">
+      <div class="contact-glow pointer-events-none absolute inset-0" aria-hidden="true">
+        <span class="contact-spotlight absolute inset-0" data-contact-spotlight></span>
+      </div>
 
       <div class="relative mx-auto w-full max-w-7xl px-6 lg:px-8">
         <div class="grid gap-12 lg:grid-cols-12 lg:gap-12">
-          <div class="on-dark min-w-0 lg:col-span-5" data-reveal>
-            <div class="flex items-center gap-3">
-              <span class="h-px w-8 bg-gold" aria-hidden="true"></span>
+          <div class="on-dark min-w-0 lg:col-span-5">
+            <div class="flex items-center gap-3" data-reveal>
+              <span class="rule-line h-px w-8 bg-gold" aria-hidden="true"></span>
               <p class="text-[11px] font-semibold uppercase leading-5 tracking-[0.22em] text-gold-light">Contacto</p>
             </div>
 
-            <h2 id="contacto-title" class="mt-5 text-balance font-serif text-3xl font-semibold leading-[1.08] tracking-[-0.02em] text-white sm:text-4xl lg:text-5xl">Hablemos de tu caso.</h2>
-            <p class="mt-5 max-w-md text-pretty text-sm leading-7 text-slate-300 sm:text-base">Cuéntame brevemente qué necesitas. La información que compartas se tratará de forma confidencial.</p>
+            <h2 id="contacto-title" data-reveal="mask" style="--reveal-delay: 100ms" class="mt-5 text-balance font-serif text-3xl font-semibold leading-[1.08] tracking-[-0.02em] text-white sm:text-4xl lg:text-5xl"><span class="mask-inner">Hablemos de tu caso.</span></h2>
+            <p class="mt-5 max-w-md text-pretty text-sm leading-7 text-slate-300 sm:text-base" data-reveal style="--reveal-delay: 180ms">Cuéntame brevemente qué necesitas. La información que compartas se tratará de forma confidencial.</p>
 
-            <address class="mt-8 grid gap-3 not-italic">
-              <a href="mailto:arturo@baptista.mx?subject=Solicitud%20de%20consulta%20legal&amp;body=Hola%2C%20Lic.%20Said.%20Me%20gustar%C3%ADa%20agendar%20una%20consulta%20legal.%20Llego%20desde%20su%20sitio%20web." class="group flex items-start gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition-colors duration-200 hover:border-gold/40 hover:bg-white/10">
-                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold-light">
+            <address class="mt-8 grid gap-3 not-italic" data-stagger>
+              <div data-reveal="left">
+                <a href="mailto:arturo@baptista.mx?subject=Solicitud%20de%20consulta%20legal&amp;body=Hola%2C%20Lic.%20Said.%20Me%20gustar%C3%ADa%20agendar%20una%20consulta%20legal.%20Llego%20desde%20su%20sitio%20web." class="contact-link group flex items-start gap-4 rounded-xl border border-white/10 bg-white/5 p-4 hover:border-gold/40 hover:bg-white/10">
+                <span class="contact-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold-light">
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <rect x="3" y="5" width="18" height="14" rx="2"/>
                     <path d="m3.5 7 8.5 6 8.5-6"/>
@@ -710,9 +1574,11 @@
                   <span class="mt-1 block break-words text-sm font-medium text-white transition-colors duration-200 group-hover:text-gold-light">arturo@baptista.mx</span>
                 </span>
               </a>
+              </div>
 
-              <a href="https://wa.me/525523131413?text=Hola%2C%20Lic.%20Said.%20Me%20gustar%C3%ADa%20agendar%20una%20consulta%20legal.%20Llego%20desde%20su%20sitio%20web." target="_blank" rel="noopener noreferrer" class="group flex items-start gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition-colors duration-200 hover:border-gold/40 hover:bg-white/10">
-                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold-light">
+              <div data-reveal="left">
+                <a href="https://wa.me/525523131413?text=Hola%2C%20Lic.%20Said.%20Me%20gustar%C3%ADa%20agendar%20una%20consulta%20legal.%20Llego%20desde%20su%20sitio%20web." target="_blank" rel="noopener noreferrer" class="contact-link group flex items-start gap-4 rounded-xl border border-white/10 bg-white/5 p-4 hover:border-gold/40 hover:bg-white/10">
+                <span class="contact-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold-light">
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L4 20.5l1.5-4.4A8.5 8.5 0 1 1 21 11.5Z"/>
                     <path d="M8.5 10h7"/>
@@ -723,14 +1589,16 @@
                   <span class="block text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">WhatsApp / Teléfono</span>
                   <span class="mt-1 block break-words text-sm font-medium text-white transition-colors duration-200 group-hover:text-gold-light">55&nbsp;2313&nbsp;1413<span class="sr-only"> (se abre en una nueva pestaña)</span></span>
                 </span>
-                <svg class="ml-auto mt-1 h-4 w-4 shrink-0 text-slate-400 transition-colors duration-200 group-hover:text-gold-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <svg class="contact-arrow ml-auto mt-1 h-4 w-4 shrink-0 text-slate-400 group-hover:text-gold-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                   <path d="M7 17 17 7"/>
                   <path d="M7 7h10v10"/>
                 </svg>
               </a>
+              </div>
 
-              <a href="https://maps.app.goo.gl/dfBmHm7Kd9DHmP2JA" target="_blank" rel="noopener noreferrer" class="group flex items-start gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition-colors duration-200 hover:border-gold/40 hover:bg-white/10">
-                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold-light">
+              <div data-reveal="left">
+                <a href="https://maps.app.goo.gl/dfBmHm7Kd9DHmP2JA" target="_blank" rel="noopener noreferrer" class="contact-link group flex items-start gap-4 rounded-xl border border-white/10 bg-white/5 p-4 hover:border-gold/40 hover:bg-white/10">
+                <span class="contact-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gold/25 bg-gold/10 text-gold-light">
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d="M19.5 10.5c0 7.1-7.5 11.25-7.5 11.25S4.5 17.6 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
                     <circle cx="12" cy="10.5" r="2.5"/>
@@ -740,14 +1608,15 @@
                   <span class="block text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Ubicación</span>
                   <span class="mt-1 block break-words text-sm font-medium leading-6 text-white transition-colors duration-200 group-hover:text-gold-light">Carr. México - Toluca 5095-Torre B, 602, La Rosita, Contadero, Cuajimalpa de Morelos, 05320 Ciudad de México, CDMX<span class="sr-only"> (se abre en una nueva pestaña)</span></span>
                 </span>
-                <svg class="ml-auto mt-1 h-4 w-4 shrink-0 text-slate-400 transition-colors duration-200 group-hover:text-gold-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <svg class="contact-arrow ml-auto mt-1 h-4 w-4 shrink-0 text-slate-400 group-hover:text-gold-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                   <path d="M7 17 17 7"/>
                   <path d="M7 7h10v10"/>
                 </svg>
               </a>
+              </div>
             </address>
 
-            <p class="mt-6 flex items-start gap-2 text-xs leading-5 text-slate-400">
+            <p class="mt-6 flex items-start gap-2 text-xs leading-5 text-slate-400" data-reveal style="--reveal-delay: 120ms">
               <svg class="mt-0.5 h-4 w-4 shrink-0 text-gold-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                 <rect x="5" y="11" width="14" height="9" rx="2"/>
                 <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
@@ -756,9 +1625,9 @@
             </p>
           </div>
 
-          <div class="min-w-0 delay-100 lg:col-span-7" data-reveal>
+          <div class="min-w-0 lg:col-span-7" data-reveal="right" style="--reveal-delay: 120ms">
             <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-white p-6 shadow-lift sm:p-8">
-              <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" aria-hidden="true"></div>
+              <div class="flow-line absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" aria-hidden="true"></div>
 
               <div class="flex items-start justify-between gap-4">
                 <div>
@@ -776,27 +1645,27 @@
 
               <form class="mt-6" data-contact-form novalidate>
                 <div class="grid gap-4 sm:grid-cols-2">
-                  <div>
+                  <div class="field-group">
                     <label for="contact-name" class="block text-sm font-medium text-ink">Nombre completo <span class="text-gold-dark" aria-hidden="true">*</span></label>
-                    <input id="contact-name" name="name" type="text" autocomplete="name" required aria-describedby="contact-name-error" placeholder="Tu nombre" class="mt-2 block w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink shadow-sm transition duration-200 placeholder:text-slate-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25">
+                    <input id="contact-name" name="name" type="text" autocomplete="name" required aria-describedby="contact-name-error" placeholder="Tu nombre" class="mt-2 block w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink shadow-sm transition duration-200 field-control placeholder:text-slate-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25">
                     <p id="contact-name-error" data-error-for="name" class="mt-1 hidden text-xs leading-5 text-red-600"></p>
                   </div>
 
-                  <div>
+                  <div class="field-group">
                     <label for="contact-email" class="block text-sm font-medium text-ink">Correo electrónico <span class="text-gold-dark" aria-hidden="true">*</span></label>
-                    <input id="contact-email" name="email" type="email" inputmode="email" autocomplete="email" required aria-describedby="contact-email-error" placeholder="tu@correo.com" class="mt-2 block w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink shadow-sm transition duration-200 placeholder:text-slate-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25">
+                    <input id="contact-email" name="email" type="email" inputmode="email" autocomplete="email" required aria-describedby="contact-email-error" placeholder="tu@correo.com" class="mt-2 block w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink shadow-sm transition duration-200 field-control placeholder:text-slate-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25">
                     <p id="contact-email-error" data-error-for="email" class="mt-1 hidden text-xs leading-5 text-red-600"></p>
                   </div>
 
-                  <div>
+                  <div class="field-group">
                     <label for="contact-phone" class="block text-sm font-medium text-ink">Teléfono / WhatsApp <span class="font-normal text-slate-500">(opcional)</span></label>
-                    <input id="contact-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="55 0000 0000" class="mt-2 block w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink shadow-sm transition duration-200 placeholder:text-slate-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25">
+                    <input id="contact-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="55 0000 0000" class="mt-2 block w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink shadow-sm transition duration-200 field-control placeholder:text-slate-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25">
                   </div>
 
-                  <div>
+                  <div class="field-group">
                     <label for="contact-area" class="block text-sm font-medium text-ink">Área de interés <span class="text-gold-dark" aria-hidden="true">*</span></label>
                     <div class="relative">
-                      <select id="contact-area" name="area" required aria-describedby="contact-area-error" class="mt-2 block w-full appearance-none rounded-xl border border-line bg-white px-4 py-3 pr-10 text-sm text-ink shadow-sm transition duration-200 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25">
+                      <select id="contact-area" name="area" required aria-describedby="contact-area-error" class="field-control mt-2 block w-full appearance-none rounded-xl border border-line bg-white px-4 py-3 pr-10 text-sm text-ink shadow-sm transition duration-200 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25">
                         <option value="" disabled selected>Selecciona un área</option>
                         <option>Derecho Penal</option>
                         <option>Criminalística</option>
@@ -811,9 +1680,9 @@
                   </div>
                 </div>
 
-                <div class="mt-4">
+                <div class="field-group mt-4">
                   <label for="contact-message" class="block text-sm font-medium text-ink">Mensaje <span class="text-gold-dark" aria-hidden="true">*</span></label>
-                  <textarea id="contact-message" name="message" rows="5" required aria-describedby="contact-message-error contact-message-hint" placeholder="Describe brevemente tu situación." class="mt-2 block w-full resize-y rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink shadow-sm transition duration-200 placeholder:text-slate-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25"></textarea>
+                  <textarea id="contact-message" name="message" rows="5" required aria-describedby="contact-message-error contact-message-hint" placeholder="Describe brevemente tu situación." class="mt-2 block w-full resize-y rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink shadow-sm transition duration-200 field-control placeholder:text-slate-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25"></textarea>
                   <p id="contact-message-hint" class="mt-1 text-xs leading-5 text-slate-500">Por seguridad, evita compartir información sensible en este primer mensaje.</p>
                   <p id="contact-message-error" data-error-for="message" class="mt-1 hidden text-xs leading-5 text-red-600"></p>
                 </div>
@@ -827,14 +1696,14 @@
                 </div>
 
                 <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <button type="submit" class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-white shadow-soft transition-colors duration-200 hover:bg-navy sm:w-auto">
+                  <button type="submit" data-magnetic class="btn-lift btn-sheen group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-white shadow-soft hover:bg-navy sm:w-auto">
                     <span>Enviar solicitud</span>
                     <svg class="h-4 w-4 text-gold-light transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                       <path d="M5 12h14"/>
                       <path d="m13 6 6 6-6 6"/>
                     </svg>
                   </button>
-                  <button type="button" data-submit-whatsapp class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-white px-6 text-sm font-semibold text-ink transition-colors duration-200 hover:border-gold hover:text-navy sm:w-auto">
+                  <button type="button" data-submit-whatsapp class="btn-lift btn-sheen btn-sheen-gold inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-white px-6 text-sm font-semibold text-ink hover:border-gold hover:text-navy sm:w-auto">
                     <svg class="h-4 w-4 text-gold-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                       <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L4 20.5l1.5-4.4A8.5 8.5 0 1 1 21 11.5Z"/>
                       <path d="M8.5 10h7"/>
@@ -852,7 +1721,7 @@
                   <span>Al continuar, se abrirá tu aplicación de correo o WhatsApp con la solicitud lista para enviar. Este sitio no almacena los datos.</span>
                 </p>
 
-                <p class="mt-4 hidden rounded-lg border border-gold/30 bg-[#FBF8F1] px-4 py-3 text-sm leading-6 text-gold-dark" role="status" aria-live="polite" data-form-status></p>
+                <p class="form-status mt-4 hidden rounded-lg border border-gold/30 bg-[#FBF8F1] px-4 py-3 text-sm leading-6 text-gold-dark" role="status" aria-live="polite" data-form-status></p>
 
                 <noscript>
                   <p class="mt-4 rounded-lg border border-line bg-mist px-4 py-3 text-xs leading-5 text-slate-600">Para enviar tu solicitud, escríbenos directamente a <a href="mailto:arturo@baptista.mx" class="font-medium text-gold-dark underline">arturo@baptista.mx</a> o por <a href="https://wa.me/525523131413" target="_blank" rel="noopener noreferrer" class="font-medium text-gold-dark underline">WhatsApp</a>.</p>
@@ -866,12 +1735,12 @@
   </main>
 
   <footer class="border-t border-white/10 bg-ink-950 py-8 text-white">
-    <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+    <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 sm:flex-row sm:items-center sm:justify-between lg:px-8" data-reveal>
       <div>
         <p class="text-pretty text-sm leading-6 text-slate-400">© 2026 Lic. Jorge Arturo Said Bernal. Todos los derechos reservados.</p>
         <p class="mt-1 text-xs leading-5 text-slate-400">Abogado litigante en Baptista Abogados Penalistas.</p>
       </div>
-      <a href="#inicio" class="group inline-flex min-h-11 items-center gap-2 self-start rounded-full text-sm font-medium text-gold-light transition-colors duration-200 hover:text-white sm:self-auto">
+      <a href="#inicio" class="back-top group inline-flex min-h-11 items-center gap-2 self-start rounded-full text-sm font-medium text-gold-light transition-colors duration-200 hover:text-white sm:self-auto">
         <span>Volver al inicio</span>
         <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
           <path d="M12 19V5"/>
@@ -885,19 +1754,75 @@
     (() => {
       document.documentElement.classList.add('js');
 
-      const progress = document.querySelector('[data-scroll-progress]');
-      const updateProgress = () => {
-        if (!progress) return;
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const value = max > 0 ? (window.scrollY / max) * 100 : 0;
-        progress.style.width = `${Math.min(100, Math.max(0, value))}%`;
-      };
-      window.addEventListener('scroll', updateProgress, { passive: true });
-      window.addEventListener('resize', updateProgress);
-      updateProgress();
-
-      const revealItems = [...document.querySelectorAll('[data-reveal]')];
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const finePointer = window.matchMedia('(pointer: fine)');
+      const desktopViewport = window.matchMedia('(min-width: 1024px)');
+
+      /* Escalonado automático para listas y grupos. */
+      document.querySelectorAll('[data-stagger]').forEach((group) => {
+        [...group.children]
+          .filter((child) => child.hasAttribute('data-reveal'))
+          .forEach((child, index) => {
+            if (!child.style.getPropertyValue('--reveal-delay')) {
+              child.style.setProperty('--reveal-delay', `${Math.min(index * 90, 540)}ms`);
+            }
+          });
+      });
+
+      const header = document.querySelector('[data-header]');
+      const progress = document.querySelector('[data-scroll-progress]');
+      const parallaxItems = [...document.querySelectorAll('[data-parallax]')].map((el) => ({
+        el,
+        speed: Number.parseFloat(el.dataset.parallax) || 0,
+      }));
+
+      let ticking = false;
+
+      const updateScrollEffects = () => {
+        ticking = false;
+
+        if (progress) {
+          const max = document.documentElement.scrollHeight - window.innerHeight;
+          const value = max > 0 ? (window.scrollY / max) * 100 : 0;
+          progress.style.width = `${Math.min(100, Math.max(0, value))}%`;
+        }
+
+        if (header) {
+          header.classList.toggle('is-scrolled', window.scrollY > 8);
+        }
+
+        if (reduceMotion.matches || !desktopViewport.matches) {
+          parallaxItems.forEach(({ el }) => {
+            el.style.translate = '';
+          });
+          return;
+        }
+
+        const viewportHeight = window.innerHeight;
+
+        parallaxItems.forEach(({ el, speed }) => {
+          const reference = el.parentElement || el;
+          const rect = reference.getBoundingClientRect();
+
+          if (rect.bottom < -200 || rect.top > viewportHeight + 200) return;
+
+          const offset = (rect.top + rect.height / 2 - viewportHeight / 2) * speed;
+          el.style.translate = `0 ${offset.toFixed(2)}px`;
+        });
+      };
+
+      const requestScrollEffects = () => {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(updateScrollEffects);
+      };
+
+      window.addEventListener('scroll', requestScrollEffects, { passive: true });
+      window.addEventListener('resize', requestScrollEffects);
+      requestScrollEffects();
+
+      /* Aparición progresiva al entrar en pantalla. */
+      const revealItems = [...document.querySelectorAll('[data-reveal]')];
 
       if (reduceMotion.matches || !('IntersectionObserver' in window)) {
         revealItems.forEach((item) => item.classList.add('is-visible'));
@@ -909,12 +1834,13 @@
               currentObserver.unobserve(entry.target);
             }
           });
-        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        }, { threshold: 0.08, rootMargin: '0px 0px -4% 0px' });
 
         revealItems.forEach((item) => observer.observe(item));
       }
 
-      const canUseSpotlight = window.matchMedia('(pointer: fine)').matches && !reduceMotion.matches;
+      /* Luz que sigue al cursor. */
+      const canUseSpotlight = finePointer.matches && !reduceMotion.matches;
 
       const bindSpotlight = (section, spotlight, xVar, yVar) => {
         if (!section || !spotlight) return;
@@ -934,6 +1860,66 @@
       if (canUseSpotlight) {
         bindSpotlight(document.querySelector('[data-profile]'), document.querySelector('[data-profile-spotlight]'), '--profile-x', '--profile-y');
         bindSpotlight(document.querySelector('[data-hero]'), document.querySelector('[data-hero-spotlight]'), '--hero-x', '--hero-y');
+        bindSpotlight(document.querySelector('[data-contact]'), document.querySelector('[data-contact-spotlight]'), '--contact-x', '--contact-y');
+      }
+
+      /* Tilt 3D sutil en tarjetas y en la imagen de perfil. */
+      if (finePointer.matches && !reduceMotion.matches) {
+        document.querySelectorAll('[data-tilt]').forEach((el) => {
+          const strength = el.dataset.tilt === 'soft' ? 2.5 : 5;
+          let frame = null;
+
+          const handleMove = (event) => {
+            const rect = el.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / rect.width - 0.5;
+            const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+            if (frame) window.cancelAnimationFrame(frame);
+
+            frame = window.requestAnimationFrame(() => {
+              el.style.setProperty('--ry', `${(x * strength).toFixed(2)}deg`);
+              el.style.setProperty('--rx', `${(-y * strength).toFixed(2)}deg`);
+
+              const glare = el.querySelector('.card-glare');
+              if (glare) {
+                glare.style.setProperty('--gx', `${((x + 0.5) * 100).toFixed(1)}%`);
+                glare.style.setProperty('--gy', `${((y + 0.5) * 100).toFixed(1)}%`);
+              }
+            });
+          };
+
+          const resetTilt = () => {
+            if (frame) window.cancelAnimationFrame(frame);
+            el.style.setProperty('--rx', '0deg');
+            el.style.setProperty('--ry', '0deg');
+          };
+
+          el.addEventListener('pointermove', handleMove, { passive: true });
+          el.addEventListener('pointerleave', resetTilt);
+          el.addEventListener('pointercancel', resetTilt);
+        });
+      }
+
+      /* Atracción magnética muy discreta en los CTA. */
+      if (finePointer.matches && !reduceMotion.matches) {
+        document.querySelectorAll('[data-magnetic]').forEach((el) => {
+          const strength = 6;
+
+          const handleMove = (event) => {
+            const rect = el.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / rect.width - 0.5;
+            const y = (event.clientY - rect.top) / rect.height - 0.5;
+            el.style.translate = `${(x * strength).toFixed(2)}px ${(y * strength).toFixed(2)}px`;
+          };
+
+          const resetMagnet = () => {
+            el.style.translate = '0px 0px';
+          };
+
+          el.addEventListener('pointermove', handleMove, { passive: true });
+          el.addEventListener('pointerleave', resetMagnet);
+          el.addEventListener('pointercancel', resetMagnet);
+        });
       }
 
       const form = document.querySelector('[data-contact-form]');
@@ -971,6 +1957,13 @@
 
       const clearError = (key) => setError(key, '');
 
+      const shakeField = (field) => {
+        if (!field || reduceMotion.matches) return;
+        field.classList.remove('field-shake');
+        void field.offsetWidth;
+        field.classList.add('field-shake');
+      };
+
       const validate = () => {
         const rules = [
           ['name', fields.name.value.trim().length >= 2, 'Escribe tu nombre completo.'],
@@ -986,6 +1979,7 @@
             clearError(key);
           } else {
             setError(key, message);
+            shakeField(fields[key]);
             if (!firstInvalid) firstInvalid = fields[key];
           }
         });
@@ -1018,6 +2012,8 @@
       const showStatus = (message) => {
         if (!status) return;
         status.textContent = message;
+        status.classList.add('hidden');
+        void status.offsetWidth;
         status.classList.remove('hidden');
       };
 
